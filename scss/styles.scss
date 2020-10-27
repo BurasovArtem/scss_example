@@ -1,0 +1,93 @@
+$hidden: true;
+$open: red;
+
+@function str-replace($string, $search, $replace: "") {
+  $index: str-index($string, $search);
+
+  @if $index {
+    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+  }
+
+  @return $string;
+}
+
+@mixin font-face($name, $path, $weight: null, $style: null, $exts: eot woff2 woff ttf svg) {
+  $src: null;
+
+  $extmods: (
+    eot: "?",
+    svg: "#" + str-replace($name, " ", "_")
+  );
+
+  $formats: (
+    otf: "opentype",
+    ttf: "truetype"
+  );
+
+  @each $ext in $exts {
+    $extmod: if(map-has-key($extmods, $ext), $ext + map-get($extmods, $ext), $ext);
+    $format: if(map-has-key($formats, $ext), map-get($formats, $ext), $ext);
+    $src: append($src, url(quote($path + "." + $extmod)) format(quote($format)), comma);
+  }
+
+  @font-face {
+    font-family: quote($name);
+    font-weight: $weight;
+    font-style: $style;
+
+    // font-display: block;
+    src: $src;
+  }
+}
+
+@include font-face('Monserrat', 'fonts/Montserrat-Regular', normal, normal, woff2 woff ttf eot svg);
+@include font-face('MonserratBold', 'fonts/Montserrat-Bold', 300, normal, woff2 woff ttf eot svg);
+
+* {
+	margin: 0;
+	padding: 0;
+	font-family: Monserrat;
+}
+
+a {
+	color: #fff;
+	font-size: 15px;
+	&:hover {
+		background-color: #000;
+		height: 50px;
+		display: block;
+	}
+}
+
+p {
+	font-size: 25px;
+	color: $open;
+}
+
+div {
+	background-color: red;
+	width: 100%;
+}
+
+#screen {
+	background-color: grey;
+	height: auto;
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	.card {
+		width: 300px;
+		height: 400px;
+		background-color: orange;
+		border-radius: 10px;
+		margin: 60px;
+		&:hover {
+			@if $hidden == false {
+				background-color: pink;
+			} @else {
+				background-color: yellow;
+			}
+		}
+	}
+}
